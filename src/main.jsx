@@ -16,6 +16,8 @@ import NotFound from './pages/NotFound';
 import AuthProvider from './Provider/AuthProvider';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import ProductDetails from './pages/ProductDetails';
+import PrivateRoute from './components/PrivateRoute/PrivateRoute';
 
 const router = createBrowserRouter([
   {
@@ -50,6 +52,13 @@ const router = createBrowserRouter([
       {
         path: '/register',
         element: <Register></Register>
+      },
+      {
+        path: '/product/:id',
+        element: <PrivateRoute>
+          <ProductDetails></ProductDetails>
+        </PrivateRoute>,
+        loader: () => fetch('/fakeData.json')
       }
     ]
   },

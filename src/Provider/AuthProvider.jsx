@@ -1,5 +1,5 @@
 
-import { GithubAuthProvider, GoogleAuthProvider, TwitterAuthProvider, createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword, signInWithPopup, signOut } from 'firebase/auth';
+import { FacebookAuthProvider, GithubAuthProvider, GoogleAuthProvider, TwitterAuthProvider, createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword, signInWithPopup, signOut } from 'firebase/auth';
 import PropTypes from 'prop-types';
 import { createContext, useEffect, useState } from 'react';
 import auth from '../Firebase/firebaseConfig';
@@ -8,31 +8,44 @@ export const AuthContext = createContext(null)
 const googleProvider = new GoogleAuthProvider();
 const githubProvider = new GithubAuthProvider();
 const twitterProvider = new TwitterAuthProvider();
+const facebookProvider = new FacebookAuthProvider();
 const AuthProvider = ({children}) => {
     const [user, setUser] = useState(null)
+    const [loading, setLoading] = useState(true)
     console.log(user)
     // create user
     const createUser = (email, password) =>{
+        setLoading(true)
         return createUserWithEmailAndPassword(auth, email, password)
     }
 
     // sign in user
     const signInUser = (email, password) =>{
+        setLoading(true)
         return signInWithEmailAndPassword(auth, email, password)
     }
 
     // google login
     const googleLogin = () =>{
+        setLoading(true)
         return signInWithPopup(auth, googleProvider)
     }
 
     // github login
     const githubLogin = () =>{
+        setLoading(true)
         return signInWithPopup(auth, githubProvider)
     }
     // twitter login
     const twitterLogin = () =>{
+        setLoading(true)
         return signInWithPopup(auth, twitterProvider)
+    }
+
+    // facebook login
+    const facebookLogin = () =>{
+        setLoading(true)
+        return signInWithPopup(auth, facebookProvider)
     }
 
     // log out
@@ -43,11 +56,13 @@ const AuthProvider = ({children}) => {
 
     // observer
     useEffect(()=>{
-        onAuthStateChanged(auth, (user) => {
+       const unSubsCribe = onAuthStateChanged(auth, (user) => {
             if (user) {
                 setUser(user)
+                setLoading(false)
             }
           });
+          return () => unSubsCribe()
     } ,[])
 
 
@@ -56,9 +71,11 @@ const AuthProvider = ({children}) => {
         signInUser,
         googleLogin,
         twitterLogin,
-        logOut,
+        facebookLogin,
         githubLogin,
-        user
+        logOut,
+        user,
+        loading
     }
     
     return (
